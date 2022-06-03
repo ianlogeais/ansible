@@ -1,0 +1,32 @@
+---
+- name: Configuration du serveur ntp
+  hosts: ntp
+  tasks:
+
+  - name: Installation du paquet NTP
+    when: ansible_os_family == 'RedHat'
+    yum:
+      name: ntp
+
+  - name: Installation du paquet NTP
+    when: ansible_os_family == 'Ubuntu'
+    apt:
+      name: ntp
+
+  - name: Modif fichier de conf part 2
+    lineinfile:
+      dest: /etc/ntp.conf
+      state: absent
+      regexp: '^server '
+
+  - name: Modification du fichier de configuration /etc/ntp.conf
+    lineinfile:
+      path: /etc/ntp.conf
+      insertafter: '^# Please consider joining the pool (http://www.pool.ntp.org/join.html).'
+      line: server 10.20.0.120 iburst
+
+  - name: Redémarrage du service NTP
+    service:
+      name: ntpd
+      state: started
+~                       
