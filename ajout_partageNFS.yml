@@ -1,0 +1,24 @@
+---
+- name: Installation du partage nfs
+  hosts: partageNFS
+  tasks:
+    - name: Création du répertoire 
+      file:
+        path: /mnt/partageNFS
+        state: directory
+# Attention aux autres distros comme ubuntu qui vont casser à cause du packet manager !!
+    - name: Installation des packages
+      yum:
+        name: nfs-utils
+    
+    - name: Modification du fstab
+      lineinfile:
+        path: /etc/fstab
+        line: ${ip}:/home/partage	/mnt/partageNFS 	nfs	rw,sync	0	0
+
+    - name: Montage du volume NFS
+      mount:
+        fstype: nfs
+        src: 10.20.0.179:/home/partage
+        path: /mnt/partageNFS
+        state : mounted
